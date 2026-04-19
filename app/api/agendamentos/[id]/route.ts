@@ -1,0 +1,36 @@
+import { NextResponse } from 'next/server'
+import { createServerSupabase, createServiceSupabase } from '@/lib/supabase-server'
+
+export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+  const supabase = createServerSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await req.json()
+  const service = createServiceSupabase()
+
+  const { data, error } = await service
+    .from('agendamentos')
+    .update({ ...body, atualizado_em: new Date().toISOString() })
+    .eq('id', params.id)
+    .select()
+    .single()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+  return NextResponse.json(data)
+}
+
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+  const supabase = createServerSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const service = createServiceSupabase()
+  const { error } = await service
+    .from('agendamentos')
+    .update({ status: 'CANCELADO', atualizado_em: new Date().toISOString() })
+    .eq('id', params.id)
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+  return NextResponse.json({ ok: true })
+}
