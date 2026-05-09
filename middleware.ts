@@ -29,10 +29,12 @@ export async function middleware(request: NextRequest) {
 
   const isPublicApi = request.nextUrl.pathname.startsWith('/api/public')
   const isLogin = request.nextUrl.pathname === '/login'
+  const isReset = request.nextUrl.pathname === '/reset-senha'
+  const isAuthCallback = request.nextUrl.pathname === '/auth/callback'
 
-  if (isPublicApi) return supabaseResponse
+  if (isPublicApi || isAuthCallback) return supabaseResponse
 
-  if (!user && !isLogin) {
+  if (!user && !isLogin && !isReset) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
