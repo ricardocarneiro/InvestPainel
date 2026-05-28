@@ -3,13 +3,14 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserSupabase } from '@/lib/supabase'
-import { Building2, ArrowRight, CheckCircle } from 'lucide-react'
+import { Building2, ArrowRight, CheckCircle, Eye, EyeOff } from 'lucide-react'
 
 type Mode = 'login' | 'forgot' | 'sent'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
+  const [showSenha, setShowSenha] = useState(false)
   const [erro, setErro] = useState('')
   const [loading, setLoading] = useState(false)
   const [mode, setMode] = useState<Mode>('login')
@@ -123,11 +124,17 @@ export default function LoginPage() {
                     Forgot password?
                   </button>
                 </div>
-                <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="h-12 w-full px-4 text-body-md text-on-surface bg-surface-container-low rounded border-b border-transparent focus:outline-none focus:bg-surface-container-lowest focus:border-b focus:border-primary placeholder:text-on-surface-variant/40 transition-weighted"
-                />
+                <div className="relative">
+                  <input type={showSenha ? 'text' : 'password'} value={senha} onChange={(e) => setSenha(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className="h-12 w-full px-4 pr-11 text-body-md text-on-surface bg-surface-container-low rounded border-b border-transparent focus:outline-none focus:bg-surface-container-lowest focus:border-b focus:border-primary placeholder:text-on-surface-variant/40 transition-weighted"
+                  />
+                  <button type="button" onClick={() => setShowSenha(!showSenha)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-weighted">
+                    {showSenha ? <EyeOff className="h-4 w-4" strokeWidth={1.5} /> : <Eye className="h-4 w-4" strokeWidth={1.5} />}
+                  </button>
+                </div>
               </div>
 
               {erro && <p className="text-body-sm text-red-600 bg-red-50 px-4 py-3 rounded">{erro}</p>}
